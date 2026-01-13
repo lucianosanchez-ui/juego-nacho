@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐕 Perrito Labrador vs Gatitos 🐱</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>🐕 Perrito Labrador vs Gatitos 🐱</h1>
+        <div class="info-panel">
+            <div class="score">Puntos: <span id="score">0</span></div>
+            <div class="lives">Vidas: <span id="lives">3</span></div>
+            <div class="level">Nivel: <span id="level">1</span></div>
+        </div>
+        <canvas id="gameCanvas" width="560" height="620"></canvas>
+        <div class="controls">
+            <p>🎮 Usa las flechas ⬆️ ⬇️ ⬅️ ➡️ para mover al perrito</p>
+            <p>🍖 ¡Recoge todas las croquetas y evita a los gatitos!</p>
+            <p>💊 Las píldoras grandes te permiten comer gatitos</p>
+        </div>
+    </div>
+    <div id="gameOver" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>¡Juego Terminado! 😢</h2>
+            <p>Puntuación final: <span id="finalScore">0</span></p>
+            <button id="restartBtn">🔄 Jugar de nuevo</button>
+        </div>
+    </div>
+    <div id="victory" class="modal" style="display: none;">
+        <div class="modal-content victory">
+            <h2>¡Victoria! 🎉</h2>
+            <p>¡El perrito escapó de todos los gatitos!</p>
+            <p>Puntuación: <span id="victoryScore">0</span></p>
+            <button id="nextLevelBtn">➡️ Siguiente nivel</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
