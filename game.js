@@ -2,6 +2,8 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+console.log('Juego iniciando...', canvas, ctx);
+
 // Constantes del juego
 const CELL_SIZE = 28;
 const GRID_WIDTH = 20;
@@ -48,11 +50,10 @@ class Player {
     constructor() {
         this.x = 10 * CELL_SIZE;
         this.y = 15 * CELL_SIZE;
-        this.size = CELL_SIZE - 4;
+        this.size = CELL_SIZE;
         this.speed = 2;
         this.direction = { x: 0, y: 0 };
         this.nextDirection = { x: 0, y: 0 };
-        this.mouthOpen = 0;
     }
 
     update() {
@@ -78,16 +79,13 @@ class Player {
 
         // Recoger croquetas
         this.collectDots();
-
-        // Animación de boca
-        this.mouthOpen += 0.1;
     }
 
     checkCollision(x, y) {
         const gridX = Math.floor(x / CELL_SIZE);
         const gridY = Math.floor(y / CELL_SIZE);
-        const gridX2 = Math.floor((x + this.size) / CELL_SIZE);
-        const gridY2 = Math.floor((y + this.size) / CELL_SIZE);
+        const gridX2 = Math.floor((x + this.size - 1) / CELL_SIZE);
+        const gridY2 = Math.floor((y + this.size - 1) / CELL_SIZE);
 
         if (gridY < 0 || gridY >= GRID_HEIGHT || gridY2 < 0 || gridY2 >= GRID_HEIGHT) return false;
         if (gridX < 0 || gridX >= GRID_WIDTH || gridX2 < 0 || gridX2 >= GRID_WIDTH) return false;
@@ -119,9 +117,9 @@ class Player {
     draw() {
         // Dibujar perrito emoji
         ctx.font = `${this.size}px Arial`;
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'top';
-        ctx.fillText('🐕', this.x, this.y);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🐕', this.x + this.size / 2, this.y + this.size / 2);
     }
 }
 
@@ -132,10 +130,10 @@ class Ghost {
         this.startY = y * CELL_SIZE;
         this.x = this.startX;
         this.y = this.startY;
-        this.size = CELL_SIZE - 4;
+        this.size = CELL_SIZE;
         this.speed = 1 + level * 0.1;
         this.color = color;
-        this.personality = personality; // 'chase', 'random', 'ambush', 'patrol'
+        this.personality = personality;
         this.direction = { x: 0, y: -1 };
         this.scared = false;
     }
@@ -144,7 +142,7 @@ class Ghost {
         this.scared = powerMode;
 
         // Elegir dirección basada en personalidad
-        if (Math.random() < 0.05) { // Cambiar dirección ocasionalmente
+        if (Math.random() < 0.05) {
             if (this.scared) {
                 this.moveAwayFrom(player);
             } else {
@@ -173,7 +171,6 @@ class Ghost {
             this.x = newX;
             this.y = newY;
         } else {
-            // Si choca, elegir nueva dirección
             this.moveRandom();
         }
 
@@ -245,7 +242,6 @@ class Ghost {
     }
 
     moveAmbush(player) {
-        // Intentar moverse hacia donde el jugador va a estar
         const targetX = player.x + player.direction.x * CELL_SIZE * 4;
         const targetY = player.y + player.direction.y * CELL_SIZE * 4;
 
@@ -275,7 +271,6 @@ class Ghost {
     }
 
     movePatrol() {
-        // Continuar en la misma dirección o cambiar aleatoriamente
         if (Math.random() < 0.1) {
             this.moveRandom();
         }
@@ -284,8 +279,8 @@ class Ghost {
     checkCollision(x, y) {
         const gridX = Math.floor(x / CELL_SIZE);
         const gridY = Math.floor(y / CELL_SIZE);
-        const gridX2 = Math.floor((x + this.size) / CELL_SIZE);
-        const gridY2 = Math.floor((y + this.size) / CELL_SIZE);
+        const gridX2 = Math.floor((x + this.size - 1) / CELL_SIZE);
+        const gridY2 = Math.floor((y + this.size - 1) / CELL_SIZE);
 
         if (gridY < 0 || gridY >= GRID_HEIGHT || gridY2 < 0 || gridY2 >= GRID_HEIGHT) return true;
         if (gridX < 0 || gridX >= GRID_WIDTH || gridX2 < 0 || gridX2 >= GRID_WIDTH) return true;
@@ -302,9 +297,9 @@ class Ghost {
     draw() {
         // Dibujar gatito emoji
         ctx.font = `${this.size}px Arial`;
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'top';
-        ctx.fillText(this.scared ? '😨' : '🐱', this.x, this.y);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.scared ? '😨' : '🐱', this.x + this.size / 2, this.y + this.size / 2);
     }
 }
 
@@ -320,7 +315,7 @@ let ghosts = [
 // Funciones del juego
 function activatePowerMode() {
     powerMode = true;
-    powerModeTimer = 300; // 5 segundos a 60 FPS
+    powerModeTimer = 300;
 }
 
 function updatePowerMode() {
@@ -337,14 +332,12 @@ function checkCollisions() {
         const ghost = ghosts[i];
         const dist = Math.hypot(player.x - ghost.x, player.y - ghost.y);
 
-        if (dist < CELL_SIZE / 2) {
+        if (dist < CELL_SIZE) {
             if (powerMode) {
-                // Comer gatito
                 score += 200;
                 updateScore();
                 ghost.reset();
             } else {
-                // Perder vida
                 lives--;
                 updateLives();
                 if (lives <= 0) {
@@ -429,7 +422,7 @@ function gameLoop() {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Dibujar
+    // Dibujar mapa
     drawMap();
 
     if (!gamePaused) {
@@ -441,6 +434,7 @@ function gameLoop() {
         checkCollisions();
     }
 
+    // Dibujar entidades
     player.draw();
     for (let ghost of ghosts) {
         ghost.draw();
@@ -462,7 +456,9 @@ function gameLoop() {
 }
 
 function startGame() {
+    console.log('Iniciando juego...');
     gameRunning = true;
+    gamePaused = false;
     score = 0;
     lives = 3;
     level = 1;
@@ -479,6 +475,11 @@ function startGame() {
     updateLevel();
     document.getElementById('gameOver').style.display = 'none';
     document.getElementById('victory').style.display = 'none';
+
+    const pauseBtn = document.getElementById('pauseBtn');
+    if (pauseBtn) pauseBtn.textContent = '⏸️ Pausa';
+
+    console.log('Comenzando game loop...');
     gameLoop();
 }
 
@@ -513,12 +514,14 @@ function nextLevel() {
     gameLoop();
 }
 
-// Controles
+// Controles de teclado
 document.addEventListener('keydown', (e) => {
     if (!gameRunning && e.key === 'Enter') {
         startGame();
         return;
     }
+
+    if (!gameRunning) return;
 
     switch (e.key) {
         case 'ArrowUp':
@@ -540,17 +543,26 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-document.getElementById('restartBtn').addEventListener('click', startGame);
-document.getElementById('nextLevelBtn').addEventListener('click', nextLevel);
+// Botones de UI
+const restartBtn = document.getElementById('restartBtn');
+if (restartBtn) {
+    restartBtn.addEventListener('click', startGame);
+}
 
-// Botón de pausa
-document.getElementById('pauseBtn').addEventListener('click', () => {
-    if (gameRunning) {
-        gamePaused = !gamePaused;
-        const btn = document.getElementById('pauseBtn');
-        btn.textContent = gamePaused ? '▶️ Continuar' : '⏸️ Pausa';
-    }
-});
+const nextLevelBtn = document.getElementById('nextLevelBtn');
+if (nextLevelBtn) {
+    nextLevelBtn.addEventListener('click', nextLevel);
+}
+
+const pauseBtn = document.getElementById('pauseBtn');
+if (pauseBtn) {
+    pauseBtn.addEventListener('click', () => {
+        if (gameRunning) {
+            gamePaused = !gamePaused;
+            pauseBtn.textContent = gamePaused ? '▶️ Continuar' : '⏸️ Pausa';
+        }
+    });
+}
 
 // Controles táctiles para móviles
 function setupTouchControls() {
@@ -559,19 +571,24 @@ function setupTouchControls() {
     const btnLeft = document.getElementById('btnLeft');
     const btnRight = document.getElementById('btnRight');
 
+    if (!btnUp || !btnDown || !btnLeft || !btnRight) {
+        console.log('Botones táctiles no encontrados');
+        return;
+    }
+
     const handleDirection = (x, y) => {
+        console.log('Dirección:', x, y);
         if (gameRunning && !gamePaused) {
             player.nextDirection = { x, y };
         }
     };
 
-    // Prevenir scroll y zoom en dispositivos táctiles
     const preventDefaults = (e) => {
         e.preventDefault();
         e.stopPropagation();
     };
 
-    // Eventos touch
+    // Eventos touch y click
     btnUp.addEventListener('touchstart', (e) => {
         preventDefaults(e);
         handleDirection(0, -1);
@@ -607,9 +624,19 @@ function setupTouchControls() {
         preventDefaults(e);
         handleDirection(1, 0);
     });
+
+    console.log('Controles táctiles configurados');
 }
 
-setupTouchControls();
-
-// Iniciar juego automáticamente
-startGame();
+// Esperar a que el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM listo');
+        setupTouchControls();
+        startGame();
+    });
+} else {
+    console.log('DOM ya estaba listo');
+    setupTouchControls();
+    startGame();
+}
