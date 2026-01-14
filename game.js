@@ -117,37 +117,11 @@ class Player {
     }
 
     draw() {
-        ctx.save();
-        ctx.translate(this.x + this.size / 2, this.y + this.size / 2);
-
-        // Determinar el ángulo de rotación según la dirección
-        let angle = 0;
-        if (this.direction.x > 0) angle = 0;
-        else if (this.direction.x < 0) angle = Math.PI;
-        else if (this.direction.y > 0) angle = Math.PI / 2;
-        else if (this.direction.y < 0) angle = -Math.PI / 2;
-
-        ctx.rotate(angle);
-
-        // Dibujar perrito (estilo Pacman)
-        ctx.fillStyle = '#FFD700';
-        ctx.beginPath();
-        const mouthAngle = Math.abs(Math.sin(this.mouthOpen)) * 0.3;
-        ctx.arc(0, 0, this.size / 2, mouthAngle, Math.PI * 2 - mouthAngle);
-        ctx.lineTo(0, 0);
-        ctx.fill();
-
-        // Ojo
-        ctx.fillStyle = '#000';
-        ctx.beginPath();
-        ctx.arc(this.size / 6, -this.size / 6, this.size / 10, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
-
-        // Emoji alternativo (más lindo)
+        // Dibujar perrito emoji
         ctx.font = `${this.size}px Arial`;
-        ctx.fillText('🐕', this.x, this.y + this.size);
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText('🐕', this.x, this.y);
     }
 }
 
@@ -326,37 +300,11 @@ class Ghost {
     }
 
     draw() {
-        ctx.save();
-
-        if (this.scared) {
-            // Gatito asustado (azul)
-            ctx.fillStyle = '#2196F3';
-        } else {
-            ctx.fillStyle = this.color;
-        }
-
-        // Cuerpo del gatito
-        ctx.beginPath();
-        ctx.arc(this.x + this.size / 2, this.y + this.size / 2, this.size / 2, Math.PI, 0);
-        ctx.lineTo(this.x + this.size, this.y + this.size);
-        ctx.lineTo(this.x + this.size * 0.75, this.y + this.size * 0.8);
-        ctx.lineTo(this.x + this.size * 0.5, this.y + this.size);
-        ctx.lineTo(this.x + this.size * 0.25, this.y + this.size * 0.8);
-        ctx.lineTo(this.x, this.y + this.size);
-        ctx.fill();
-
-        // Ojos
-        ctx.fillStyle = this.scared ? '#FFF' : '#FFF';
-        ctx.beginPath();
-        ctx.arc(this.x + this.size * 0.35, this.y + this.size * 0.4, this.size / 8, 0, Math.PI * 2);
-        ctx.arc(this.x + this.size * 0.65, this.y + this.size * 0.4, this.size / 8, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
-
-        // Emoji alternativo
+        // Dibujar gatito emoji
         ctx.font = `${this.size}px Arial`;
-        ctx.fillText(this.scared ? '😨' : '🐱', this.x, this.y + this.size);
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(this.scared ? '😨' : '🐱', this.x, this.y);
     }
 }
 
