@@ -115,11 +115,33 @@ class Player {
     }
 
     draw() {
-        // Dibujar perrito emoji
-        ctx.font = `${this.size}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('🐕', this.x + this.size / 2, this.y + this.size / 2);
+        // Dibujar perrito (círculo amarillo con ojos)
+        const centerX = this.x + this.size / 2;
+        const centerY = this.y + this.size / 2;
+        const radius = this.size / 2 - 2;
+
+        // Cuerpo amarillo
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Contorno
+        ctx.strokeStyle = '#FFA500';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Ojos
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(centerX - 4, centerY - 3, 2, 0, Math.PI * 2);
+        ctx.arc(centerX + 4, centerY - 3, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Nariz
+        ctx.beginPath();
+        ctx.arc(centerX, centerY + 3, 2, 0, Math.PI * 2);
+        ctx.fill();
     }
 }
 
@@ -295,11 +317,66 @@ class Ghost {
     }
 
     draw() {
-        // Dibujar gatito emoji
-        ctx.font = `${this.size}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(this.scared ? '😨' : '🐱', this.x + this.size / 2, this.y + this.size / 2);
+        // Dibujar gatito (forma de fantasma estilo Pacman)
+        const centerX = this.x + this.size / 2;
+        const centerY = this.y + this.size / 2;
+        const radius = this.size / 2 - 2;
+
+        // Color según estado
+        if (this.scared) {
+            ctx.fillStyle = '#2196F3';
+        } else {
+            ctx.fillStyle = this.color;
+        }
+
+        // Cuerpo (mitad superior circular)
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, Math.PI, 0, false);
+
+        // Parte inferior con forma ondulada
+        const waveWidth = this.size / 3;
+        ctx.lineTo(this.x + this.size - 2, this.y + this.size - 2);
+        ctx.lineTo(this.x + this.size - waveWidth, this.y + this.size - 6);
+        ctx.lineTo(this.x + waveWidth, this.y + this.size - 6);
+        ctx.lineTo(this.x + 2, this.y + this.size - 2);
+        ctx.closePath();
+        ctx.fill();
+
+        // Contorno
+        ctx.strokeStyle = this.scared ? '#1976D2' : this.color;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Ojos
+        if (this.scared) {
+            // Ojos de miedo
+            ctx.fillStyle = '#FFF';
+            ctx.beginPath();
+            ctx.arc(centerX - 5, centerY - 2, 3, 0, Math.PI * 2);
+            ctx.arc(centerX + 5, centerY - 2, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pupilas
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(centerX - 5, centerY - 2, 1, 0, Math.PI * 2);
+            ctx.arc(centerX + 5, centerY - 2, 1, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            // Ojos normales
+            ctx.fillStyle = '#FFF';
+            ctx.beginPath();
+            ctx.arc(centerX - 4, centerY - 2, 3, 0, Math.PI * 2);
+            ctx.arc(centerX + 4, centerY - 2, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pupilas
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(centerX - 4, centerY - 2, 1.5, 0, Math.PI * 2);
+            ctx.arc(centerX + 4, centerY - 2, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
 }
 
