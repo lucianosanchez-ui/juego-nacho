@@ -14,9 +14,25 @@
             <div class="lives">Vidas: <span id="lives">3</span></div>
             <div class="level">Nivel: <span id="level">1</span></div>
         </div>
-        <canvas id="gameCanvas" width="560" height="620"></canvas>
+        <div class="game-wrapper">
+            <button id="pauseBtn" class="pause-btn">⏸️ Pausa</button>
+            <canvas id="gameCanvas" width="560" height="620"></canvas>
+        </div>
+
+        <!-- Controles táctiles para móviles -->
+        <div id="touchControls" class="touch-controls">
+            <div class="dpad">
+                <button id="btnUp" class="dpad-btn dpad-up">⬆️</button>
+                <button id="btnLeft" class="dpad-btn dpad-left">⬅️</button>
+                <button id="btnCenter" class="dpad-btn dpad-center"></button>
+                <button id="btnRight" class="dpad-btn dpad-right">➡️</button>
+                <button id="btnDown" class="dpad-btn dpad-down">⬇️</button>
+            </div>
+        </div>
+
         <div class="controls">
-            <p>🎮 Usa las flechas ⬆️ ⬇️ ⬅️ ➡️ para mover al perrito</p>
+            <p class="desktop-only">🎮 Usa las flechas ⬆️ ⬇️ ⬅️ ➡️ para mover al perrito</p>
+            <p class="mobile-only">🎮 Usa los botones de abajo para mover al perrito</p>
             <p>🍖 ¡Recoge todas las croquetas y evita a los gatitos!</p>
             <p>💊 Las píldoras grandes te permiten comer gatitos</p>
         </div>

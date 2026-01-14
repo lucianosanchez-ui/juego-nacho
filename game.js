@@ -12,6 +12,7 @@ let score = 0;
 let lives = 3;
 let level = 1;
 let gameRunning = false;
+let gamePaused = false;
 let powerMode = false;
 let powerModeTimer = 0;
 
@@ -482,16 +483,32 @@ function gameLoop() {
 
     // Dibujar
     drawMap();
-    player.update();
-    player.draw();
 
+    if (!gamePaused) {
+        player.update();
+        for (let ghost of ghosts) {
+            ghost.update(player);
+        }
+        updatePowerMode();
+        checkCollisions();
+    }
+
+    player.draw();
     for (let ghost of ghosts) {
-        ghost.update(player);
         ghost.draw();
     }
 
-    updatePowerMode();
-    checkCollisions();
+    // Mostrar mensaje de pausa
+    if (gamePaused) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#FFF';
+        ctx.font = 'bold 48px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('PAUSA', canvas.width / 2, canvas.height / 2);
+        ctx.font = '24px Arial';
+        ctx.fillText('Presiona ⏸️ para continuar', canvas.width / 2, canvas.height / 2 + 50);
+    }
 
     requestAnimationFrame(gameLoop);
 }
@@ -577,6 +594,74 @@ document.addEventListener('keydown', (e) => {
 
 document.getElementById('restartBtn').addEventListener('click', startGame);
 document.getElementById('nextLevelBtn').addEventListener('click', nextLevel);
+
+// Botón de pausa
+document.getElementById('pauseBtn').addEventListener('click', () => {
+    if (gameRunning) {
+        gamePaused = !gamePaused;
+        const btn = document.getElementById('pauseBtn');
+        btn.textContent = gamePaused ? '▶️ Continuar' : '⏸️ Pausa';
+    }
+});
+
+// Controles táctiles para móviles
+function setupTouchControls() {
+    const btnUp = document.getElementById('btnUp');
+    const btnDown = document.getElementById('btnDown');
+    const btnLeft = document.getElementById('btnLeft');
+    const btnRight = document.getElementById('btnRight');
+
+    const handleDirection = (x, y) => {
+        if (gameRunning && !gamePaused) {
+            player.nextDirection = { x, y };
+        }
+    };
+
+    // Prevenir scroll y zoom en dispositivos táctiles
+    const preventDefaults = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    // Eventos touch
+    btnUp.addEventListener('touchstart', (e) => {
+        preventDefaults(e);
+        handleDirection(0, -1);
+    });
+    btnUp.addEventListener('click', (e) => {
+        preventDefaults(e);
+        handleDirection(0, -1);
+    });
+
+    btnDown.addEventListener('touchstart', (e) => {
+        preventDefaults(e);
+        handleDirection(0, 1);
+    });
+    btnDown.addEventListener('click', (e) => {
+        preventDefaults(e);
+        handleDirection(0, 1);
+    });
+
+    btnLeft.addEventListener('touchstart', (e) => {
+        preventDefaults(e);
+        handleDirection(-1, 0);
+    });
+    btnLeft.addEventListener('click', (e) => {
+        preventDefaults(e);
+        handleDirection(-1, 0);
+    });
+
+    btnRight.addEventListener('touchstart', (e) => {
+        preventDefaults(e);
+        handleDirection(1, 0);
+    });
+    btnRight.addEventListener('click', (e) => {
+        preventDefaults(e);
+        handleDirection(1, 0);
+    });
+}
+
+setupTouchControls();
 
 // Iniciar juego automáticamente
 startGame();
